@@ -2,6 +2,7 @@ package com.example.Sports_Arena.Controller;
 
 
 import com.example.Sports_Arena.Model.SportsArena;
+import com.example.Sports_Arena.Model.SportsArenaWithCourts;
 import com.example.Sports_Arena.Service.SportsArenaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,11 @@ public class SportsArenaController {
     public ResponseEntity<?> deleteSportsArena(@PathVariable Long sportsArenaId){
         return sportsArenaService.deleteSportsArena(sportsArenaId);
     }
+    @GetMapping("/{arenaId}/courts")
+    public SportsArenaWithCourts getAllCourtdForArena(@PathVariable Long arenaId){
+        return sportsArenaService.getAllCourtsForArena(arenaId);
+    }
+
 
 
 }

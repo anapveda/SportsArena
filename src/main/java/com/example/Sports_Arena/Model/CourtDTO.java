@@ -1,10 +1,12 @@
 package com.example.Sports_Arena.Model;
 
-public class Court {
-    private Long id;
-    private String courtNumber;
+import lombok.Data;
+
+@Data
+public class CourtDTO {
+    private Long Id;
     private String type; // e.g. Single, Double
     private Double price;
     private Boolean isAvailable;
-    private  Long sportsArenaId; // reference to Auditorium microservice
+    private  Long sportsArenaId;
 }

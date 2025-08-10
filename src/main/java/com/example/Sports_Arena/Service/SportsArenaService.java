@@ -1,6 +1,8 @@
 package com.example.Sports_Arena.Service;
 
+import com.example.Sports_Arena.Model.CourtDTO;
 import com.example.Sports_Arena.Model.SportsArena;
+import com.example.Sports_Arena.Model.SportsArenaWithCourts;
 import com.example.Sports_Arena.Repository.SportsArenaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +17,13 @@ public class SportsArenaService {
 
     @Autowired
     SportsArenaRepo sportsArenaRepo;
+
+    @Autowired
+    FindAllCourts findAllCourts;
+
     public ResponseEntity<?> addSportsArena(SportsArena sportsArena) {
-        SportsArena s=new SportsArena();
-        s.setName(sportsArena.getName());
-        s.setLatitude(sportsArena.getLatitude());
-        s.setLongitude(sportsArena.getLongitude());
-        sportsArenaRepo.save(s);
+
+        sportsArenaRepo.save(sportsArena);
         return new ResponseEntity<>("Sucessfully added Sports Arena", HttpStatus.OK);
     }
 
@@ -37,5 +40,15 @@ public class SportsArenaService {
              return  sportsArenaRepo.findAll();
          }
          return new ArrayList<>();
+    }
+
+    public SportsArenaWithCourts getAllCourtsForArena(Long arenaId) {
+        SportsArena sportsArena=sportsArenaRepo.findById(arenaId).orElseThrow(() -> new RuntimeException("sports arena not found"));
+
+        List<CourtDTO> courts = findAllCourts.getAvailableCourts(arenaId);
+        SportsArenaWithCourts response = new SportsArenaWithCourts();
+        response.setSportsArena(sportsArena);response.setCourts(courts);
+
+        return response;
     }
 }
