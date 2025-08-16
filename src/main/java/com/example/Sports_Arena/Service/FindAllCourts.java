@@ -1,5 +1,6 @@
 package com.example.Sports_Arena.Service;
 
+import com.example.Sports_Arena.Authentication.FeignClientConfig;
 import com.example.Sports_Arena.Model.CourtDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,9 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "COURT-SERVICE", url = "http://localhost:8082")
+@FeignClient(name = "COURT-SERVICE",configuration = FeignClientConfig.class)
 public interface FindAllCourts {
 
-    @GetMapping("/court/arena/{arenaId}")
+    @GetMapping("/courts/arena/{arenaId}")
     List<CourtDTO> getAvailableCourts(@PathVariable("arenaId") Long arenaId);
 }

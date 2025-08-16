@@ -8,11 +8,10 @@ import com.example.Sports_Arena.Service.SportsArenaService;
 import com.example.Sports_Arena.Service.UserLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/arena")
@@ -42,13 +41,11 @@ public class SportsArenaController {
     public SportsArenaWithCourts getAllCourtdForArena(@PathVariable Long arenaId){
         return sportsArenaService.getAllCourtsForArena(arenaId);
     }
-    @GetMapping("/users/{id}/location")
-    public List<SportsArena> getNearestSportsArena(@PathVariable long id) {
-        LocationDTO locationDTO= userLocation.getUserLocation(id).getBody();
-        double userLat = locationDTO.getLatitude();
-        double userLng = locationDTO.getLongitude();
-        //List<SportsArena>
-        return new ArrayList<>();
+    @GetMapping("/user/location")
+    public List<SportsArena> getNearestSportsArena() {
+        LocationDTO userLocationDTO= userLocation.getUserLocation().getBody();
+        List<SportsArena> nearestSportsArena=sportsArenaService.findNearestSportsArena(userLocationDTO);
+        return nearestSportsArena;
     }
 
 
