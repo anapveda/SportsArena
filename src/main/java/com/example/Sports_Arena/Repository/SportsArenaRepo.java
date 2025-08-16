@@ -14,4 +14,6 @@ public interface SportsArenaRepo extends JpaRepository<SportsArena,Long> {
     @Transactional
     @Query(value = "DELETE FROM sportsarena WHERE id = :sportsArenaId", nativeQuery = true)
     int deleteSportsArenaById(@Param("sportsArenaId")Long sportsArenaId);
+    @Query(value = "SELECT * FROM sportsarena WHERE name= :key", nativeQuery = true)
+    SportsArena findBySportsArenaName(@Param("key") String key);
 }

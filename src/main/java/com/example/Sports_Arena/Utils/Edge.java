@@ -1,5 +1,8 @@
 package com.example.Sports_Arena.Utils;
 
+import lombok.Data;
+
+@Data
 public class Edge {
     String target;
     double weight;

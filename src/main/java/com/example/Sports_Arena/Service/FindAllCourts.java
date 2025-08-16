@@ -11,6 +11,6 @@ import java.util.List;
 @FeignClient(name = "COURT-SERVICE",configuration = FeignClientConfig.class)
 public interface FindAllCourts {
 
-    @GetMapping("/courts/arena/{arenaId}")
+    @GetMapping("/courts/{arenaId}")
     List<CourtDTO> getAvailableCourts(@PathVariable("arenaId") Long arenaId);
 }

@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SportsArenaService {
@@ -57,11 +54,20 @@ public class SportsArenaService {
     }
 
 
-    public List<SportsArena> findNearestSportsArena(LocationDTO userLocationDTO) {
-        List<SportsArena> nearestSportsArena=new ArrayList<>();
+    public Map<SportsArena,Double> findNearestSportsArena(LocationDTO userLocationDTO) {
+        Map<SportsArena,Double> nearestSportsArena=new HashMap<>();
         List<SportsArena> getAllSportsArena=sportsArenaRepo.findAll();
         Map<String, List<Edge>> graph=AdjacenyMatrix(getAllSportsArena,userLocationDTO);
-        System.out.println(graph);
+        Map<String, Double> nearestDistances= dijkstra(graph,"U");
+        for( Map.Entry<String, Double> m:nearestDistances.entrySet()){
+
+         if(!m.getKey().equalsIgnoreCase("U")) {
+             SportsArena s=sportsArenaRepo.findBySportsArenaName(m.getKey());
+             nearestSportsArena.put(s,m.getValue());
+         }
+
+        }
+
         return nearestSportsArena;
     }
 
@@ -70,6 +76,7 @@ public class SportsArenaService {
         List<LocationDTO> locations=new ArrayList<>();
         for(SportsArena s: getAllSportsArena){
             LocationDTO l=new LocationDTO();
+            l.setName(s.getName());
             l.setLatitude(s.getLatitude());
             l.setLongitude(s.getLongitude());
             locations.add(l);
@@ -77,29 +84,29 @@ public class SportsArenaService {
         Map<String,Double> userLocationToSportsArena=new HashMap<>();
         List<Edge> weightsFromUserToArena=new ArrayList<>();
         for(int i=0;i< locations.size();i++){
-            String arena="A"+(i+1);
+            //String arena="A"+(i+1);
             double distance=haversine(userLocationDTO.getLatitude(), userLocationDTO.getLongitude(),
                     locations.get(i).getLatitude(),locations.get(i).getLongitude());
-            userLocationToSportsArena.put(arena,distance);
-            Edge e=new Edge(arena,distance);
+            userLocationToSportsArena.put(locations.get(i).getName(),distance);
+            Edge e=new Edge(locations.get(i).getName(),distance);
             weightsFromUserToArena.add(e);
         }
         graph.put("U",weightsFromUserToArena);
         for(int i=0;i< locations.size();i++){
-            String arena1="A"+(i+1);
+            //String arena1="A"+(i+1);
             List<Edge> weightsFromArena =new ArrayList<>();
-            Edge e=new Edge("U",userLocationToSportsArena.get(arena1));
+            Edge e=new Edge("U",userLocationToSportsArena.get(locations.get(i).getName()));
             weightsFromArena.add(e);
             for(int j=0;j<locations.size();j++){
             if(i!=j){
-                String arena2="A"+(j+1);
+                //String arena2="A"+(j+1);
                 double distance=haversine(locations.get(i).getLatitude(),locations.get(i).getLongitude(),
                         locations.get(j).getLatitude(),locations.get(j).getLongitude());
-                Edge edge=new Edge(arena2,distance);
+                Edge edge=new Edge(locations.get(j).getName(),distance);
                 weightsFromArena.add(edge);
             }
             }
-            graph.put(arena1,weightsFromArena);
+            graph.put(locations.get(i).getName(),weightsFromArena);
         }
         return graph;
 
@@ -114,6 +121,35 @@ public class SportsArenaService {
                         Math.sin(dLon/2) * Math.sin(dLon/2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return R * c;
+    }
+
+    public static Map<String, Double> dijkstra(Map<String, List<Edge>> graph, String source) {
+        // Distance map (initialize to infinity)
+        Map<String, Double> distances = new HashMap<>();
+        for (String node : graph.keySet()) {
+            distances.put(node, Double.MAX_VALUE);
+        }
+        distances.put(source, 0.0);
+
+        // Min-heap priority queue (node, distance)
+        PriorityQueue<Map.Entry<String, Double>> pq = new PriorityQueue<>(
+                Comparator.comparingDouble(Map.Entry::getValue)
+        );
+        pq.add(new AbstractMap.SimpleEntry<>(source, 0.0));
+
+        while (!pq.isEmpty()) {
+            String current = pq.poll().getKey();
+
+            for (Edge edge : graph.getOrDefault(current, new ArrayList<>())) {
+                double newDist = distances.get(current) + edge.getWeight();
+                if (newDist < distances.get(edge.getTarget())) {
+                    distances.put(edge.getTarget(), newDist);
+                    pq.add(new AbstractMap.SimpleEntry<>(edge.getTarget(), newDist));
+                }
+            }
+        }
+
+        return distances;
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/arena")
@@ -37,14 +38,17 @@ public class SportsArenaController {
     public ResponseEntity<?> deleteSportsArena(@PathVariable Long sportsArenaId){
         return sportsArenaService.deleteSportsArena(sportsArenaId);
     }
-    @GetMapping("/{arenaId}/courts")
+    @GetMapping("/{arenaId}")
     public SportsArenaWithCourts getAllCourtdForArena(@PathVariable Long arenaId){
         return sportsArenaService.getAllCourtsForArena(arenaId);
     }
     @GetMapping("/user/location")
-    public List<SportsArena> getNearestSportsArena() {
+    public Map<SportsArena,Double> getNearestSportsArena() {
         LocationDTO userLocationDTO= userLocation.getUserLocation().getBody();
-        List<SportsArena> nearestSportsArena=sportsArenaService.findNearestSportsArena(userLocationDTO);
+        Map<SportsArena,Double> nearestSportsArena=sportsArenaService.findNearestSportsArena(userLocationDTO);
+        for(Map.Entry<SportsArena,Double> m: nearestSportsArena.entrySet()){
+            System.out.println(m.getKey().getName()+" "+m.getValue());
+        }
         return nearestSportsArena;
     }
 

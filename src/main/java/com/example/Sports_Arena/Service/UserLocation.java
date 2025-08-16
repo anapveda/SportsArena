@@ -12,7 +12,7 @@ import java.util.Map;
 
 @FeignClient(name = "USER-SERVICE",configuration = FeignClientConfig.class,url = "http://localhost:8080")
 public interface UserLocation {
-    @GetMapping("/user/location")
+    @GetMapping("/auth/user/location")
     public ResponseEntity<LocationDTO> getUserLocation();
 
 }
