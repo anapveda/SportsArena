@@ -53,4 +53,6 @@ public class SportsArena {
     @Column(name = "court_id")
     private List<Long> courtList;
 
+
+
 }

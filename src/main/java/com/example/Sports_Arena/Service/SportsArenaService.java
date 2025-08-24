@@ -1,9 +1,6 @@
 package com.example.Sports_Arena.Service;
 
-import com.example.Sports_Arena.Model.CourtDTO;
-import com.example.Sports_Arena.Model.LocationDTO;
-import com.example.Sports_Arena.Model.SportsArena;
-import com.example.Sports_Arena.Model.SportsArenaWithCourts;
+import com.example.Sports_Arena.Model.*;
 import com.example.Sports_Arena.Repository.SportsArenaRepo;
 import com.example.Sports_Arena.Utils.Edge;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +19,33 @@ public class SportsArenaService {
     @Autowired
     FindAllCourts findAllCourts;
 
-    public ResponseEntity<?> addSportsArena(SportsArena sportsArena) {
+    public ResponseEntity<?> addSportsArena(SportsArenaWithCourts sportsArenaWithCourts) {
 
-        sportsArenaRepo.save(sportsArena);
+        SportsArena sportsArena = new SportsArena();
+        sportsArena.setName(sportsArenaWithCourts.getSportsArena().getName());
+        sportsArena.setLatitude(sportsArenaWithCourts.getSportsArena().getLatitude());
+        sportsArena.setLongitude(sportsArenaWithCourts.getSportsArena().getLongitude());
+        SportsArena existing = sportsArenaRepo.findBySportsArenaName(sportsArena.getName());
+        if (existing != null) {
+            sportsArena = existing;
+
+        }
+        SportsArena savedArena=sportsArenaRepo.save(sportsArena);
+        Long arenaId = savedArena.getId();
+        if (sportsArenaWithCourts.getCourts() != null && !sportsArenaWithCourts.getCourts().isEmpty()) {
+            List<Long> courtIds = sportsArenaWithCourts.getCourts().stream()
+                    .map(CourtDTO::getId)
+                    .toList();
+
+            AssignCourtsRequest a = new AssignCourtsRequest();
+            a.setArenaId(arenaId);   // ✅ now correct
+            a.setCourtIds(courtIds);
+
+            System.out.println(a.getArenaId() + " " + a.getCourtIds());
+
+            findAllCourts.assignCourtsToArena(a);
+        }
+
         return new ResponseEntity<>("Sucessfully added Sports Arena", HttpStatus.OK);
     }
 

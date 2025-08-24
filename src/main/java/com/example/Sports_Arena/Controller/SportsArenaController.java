@@ -23,6 +23,9 @@ public class SportsArenaController {
 
     @Autowired
     UserLocation userLocation;
+
+
+
 //fetch based on nearest location
     @GetMapping("/getAll")
     public List<SportsArena> getAllSportsArena(){
@@ -30,9 +33,11 @@ public class SportsArenaController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addSportsArena(@RequestBody SportsArena sportsArena){
-        return sportsArenaService.addSportsArena(sportsArena);
+    public ResponseEntity<?> addSportsArena(@RequestBody SportsArenaWithCourts sportsArenaWithCourts){
+        return sportsArenaService.addSportsArena(sportsArenaWithCourts);
     }
+
+
 
     @DeleteMapping("/delete/{sportsArenaId}")
     public ResponseEntity<?> deleteSportsArena(@PathVariable Long sportsArenaId){

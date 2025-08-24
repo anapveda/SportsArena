@@ -11,4 +11,6 @@ import java.util.List;
 public class SportsArenaWithCourts {
     private SportsArena sportsArena;
     private List<CourtDTO> courts;
+
+
 }
