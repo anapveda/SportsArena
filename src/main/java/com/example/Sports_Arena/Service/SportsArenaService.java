@@ -36,7 +36,6 @@ public class SportsArenaService {
             List<Long> courtIds = sportsArenaWithCourts.getCourts().stream()
                     .map(CourtDTO::getId)
                     .toList();
-
             AssignCourtsRequest a = new AssignCourtsRequest();
             a.setArenaId(arenaId);   // ✅ now correct
             a.setCourtIds(courtIds);
